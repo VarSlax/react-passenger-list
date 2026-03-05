@@ -5,7 +5,7 @@ import { Home, PassengerList } from './pages';
 
 export function App() {
   return (
-    <Router>
+    <Router basename={import.meta.env.BASE_URL}>
       <div className="app-container">
         <header className="app-header">
           <Link to="/" aria-label="Passenger Hub Home" className="logo-link">

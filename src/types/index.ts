@@ -1,2 +1,2 @@
-export * from './passangerData';
+export * from './passenger';
 export * from './randomUser';

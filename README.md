@@ -41,3 +41,4 @@ A modern, accessible React application for managing passenger lists. Built with 
 - `src/pages`: Main application views (Home, Passenger List).
 - `src/types`: TypeScript interfaces for API and state.
 - `src/assets`: Static assets and icons.
+- `src/hooks`: Custom React hooks.

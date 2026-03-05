@@ -91,17 +91,32 @@
 .add-passenger-form {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   gap: 16px;
-  padding: 12px;
+  padding: 8px 8px 8px 16px;
   border-radius: 20px;
-  background: rgba(15, 23, 42, 0.4);
-  border: 1px solid var(--border-color);
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid var(--glass-border);
   transition: var(--transition);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.add-passenger-form:hover {
+  background: rgba(15, 23, 42, 0.8);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
 }
 
 .add-passenger-form:focus-within {
   border-color: var(--primary);
   box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+}
+
+.input-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
 }
 
 .name-input {
@@ -111,7 +126,8 @@
   outline: none;
   color: white;
   font-size: 1rem;
-  padding: 12px 20px;
+  padding: 12px 4px;
+  width: 100%;
 }
 
 .submit-btn {
@@ -126,13 +142,53 @@
   box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
 }
 
-.submit-btn:hover {
+.submit-btn:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
 }
 
-.submit-btn:active {
+.submit-btn:active:not(:disabled) {
   transform: translateY(0);
+}
+
+.submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  filter: grayscale(0.8);
+  box-shadow: none;
+  background: var(--text-muted);
+}
+
+.error-text {
+  color: #f87171;
+  font-size: 0.75rem;
+  margin-top: 4px;
+  font-weight: 500;
+  animation: fadeInDown 0.3s ease-out;
+  position: absolute;
+  top: 100%;
+  left: 4px;
+  padding-top: 8px;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.name-input.input-error {
+  color: #f87171;
+}
+
+.add-passenger-form:has(.input-error) {
+  border-color: rgba(239, 68, 68, 0.5);
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.1);
 }
 
 /* List UI */
@@ -295,6 +351,7 @@
   }
   .add-passenger-form {
     flex-direction: column;
+    padding: 16px;
   }
   .app-header h1 {
     font-size: 2.2rem;
@@ -347,13 +404,8 @@
 button:focus-visible,
 .nav-link:focus-visible,
 .logo-link:focus-visible,
-.name-input:focus-visible,
 .submit-btn:focus-visible {
   outline: 2px solid var(--primary);
   outline-offset: 4px;
   border-radius: 8px;
-}
-
-.name-input:focus-visible {
-  outline-offset: -4px;
 }

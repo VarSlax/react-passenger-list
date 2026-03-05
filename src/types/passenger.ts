@@ -1,4 +1,4 @@
-export type PassengerData = {
+export type Passenger = {
   id: string;
   name: string;
 };

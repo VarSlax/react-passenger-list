@@ -1,10 +1,10 @@
 import { useState, useCallback } from 'react';
 
-import type { PassengerData } from '../types';
-import type { RandomUserApiResponse, RandomUserResult } from '../types/randomUser';
+import type { Passenger } from '../types';
+import type { RandomUserApiResponse, RandomApiUser } from '../types/randomUser';
 
 export const useFetchPassengers = () => {
-  const [passengers, setPassengers] = useState<PassengerData[]>([]);
+  const [passengers, setPassengers] = useState<Passenger[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -17,12 +17,12 @@ export const useFetchPassengers = () => {
 
       const data: RandomUserApiResponse = await response.json();
 
-      const mappedResults: PassengerData[] = data.results.map((item: RandomUserResult) => ({
+      const mappedResults: Passenger[] = data.results.map((item: RandomApiUser) => ({
         id: item.login.uuid,
         name: `${item.name.first} ${item.name.last}`,
       }));
 
-      setPassengers((prev: PassengerData[]) => [...prev, ...mappedResults]);
+      setPassengers((prev: Passenger[]) => [...prev, ...mappedResults]);
       setError(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong');

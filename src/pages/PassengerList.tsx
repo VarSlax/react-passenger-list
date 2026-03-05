@@ -1,28 +1,58 @@
 import { useState, useEffect } from 'react';
 
-import { Passenger } from '../components/Passenger';
+import { PassengerCard } from '../components/PassengerCard';
 import { useFetchPassengers } from '../hooks/useFetchPassengers';
+import { normalizeName, validateName } from '../utils/passengerValidation';
 
-import type { PassengerData } from '../types';
+import type { Passenger } from '../types';
 
 export const PassengerList = () => {
   const [newName, setNewName] = useState<string>('');
-  const [filter, setFilter] = useState<string>('');
+  const [validationError, setValidationError] = useState<string | null>(null);
+  const [isDirty, setIsDirty] = useState<boolean>(false);
 
   const { passengers, loading, error, fetchPassengers, setPassengers } = useFetchPassengers();
 
   const handleAddPassenger = (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!newName.trim()) return;
+    // Always run full validation on submit regardless of dirty state
+    const submitError = validateName(newName);
+    if (submitError) {
+      setValidationError(submitError);
+      setIsDirty(true);
+      return;
+    }
 
-    const newPassenger: PassengerData = {
+    const newPassenger: Passenger = {
       id: crypto.randomUUID(),
       name: newName.trim(),
     };
 
-    setPassengers((prev: PassengerData[]) => [newPassenger, ...prev]);
+    setPassengers((prev: Passenger[]) => [newPassenger, ...prev]);
     setNewName('');
+    setValidationError(null);
+    setIsDirty(false);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const normalized = normalizeName(e.target.value);
+    setNewName(normalized);
+
+    // Only show inline errors once the field has been blurred at least once
+    if (isDirty) {
+      setValidationError(normalized.trim().length > 0 ? validateName(normalized) : null);
+    }
+  };
+
+  // Show validation error only after the user leaves the field
+  const handleBlur = () => {
+    if (newName.trim().length === 0) {
+      // Don't nag if they just tabbed through an empty field
+      return;
+    }
+    setIsDirty(true);
+    setValidationError(validateName(newName));
   };
 
   const handleShowMore = () => {
@@ -33,9 +63,7 @@ export const PassengerList = () => {
     fetchPassengers(5);
   }, [fetchPassengers]);
 
-  const filteredPassengers = passengers.filter((passenger) =>
-    passenger.name.toLowerCase().includes(filter.toLowerCase()),
-  );
+  const isSubmitDisabled = !newName.trim() || !!validationError;
 
   return (
     <main className="app-content">
@@ -54,20 +82,24 @@ export const PassengerList = () => {
               type="text"
               placeholder="Enter passenger name..."
               value={newName}
-              onChange={(e) => setNewName(e.target.value)}
-              className="name-input"
-              required
+              onChange={handleInputChange}
+              onBlur={handleBlur}
+              className={`name-input ${validationError ? 'input-error' : ''}`}
+              autoComplete="off"
+              aria-invalid={!!validationError}
+              aria-describedby={validationError ? 'name-error' : undefined}
             />
+            {validationError && (
+              <span id="name-error" className="error-text" role="alert">
+                {validationError}
+              </span>
+            )}
           </div>
 
-          <button type="submit" className="submit-btn" disabled={!newName.trim()}>
+          <button type="submit" className="submit-btn" disabled={isSubmitDisabled}>
             Add Passenger
           </button>
         </form>
-      </section>
-
-      <section>
-        <input type="text" value={filter} onChange={(e) => setFilter(e.target.value)} />
       </section>
 
       <section className="passenger-list-section" aria-labelledby="list-title">
@@ -79,8 +111,8 @@ export const PassengerList = () => {
         </div>
 
         <ul className="passenger-grid">
-          {filteredPassengers.map((passenger) => (
-            <Passenger key={passenger.id} passenger={passenger} />
+          {passengers.map((passenger) => (
+            <PassengerCard key={passenger.id} passenger={passenger} />
           ))}
         </ul>
 

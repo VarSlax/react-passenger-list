@@ -1,6 +1,6 @@
-import type { PassengerData } from '../types';
+import type { Passenger } from '../types';
 
-export const Passenger = ({ passenger }: { passenger: PassengerData }) => {
+export const PassengerCard = ({ passenger }: { passenger: Passenger }) => {
   return (
     <li className="passenger-item">
       <article className="passenger-card">
